@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+    <id>keycloak</id>
+    <name>Keycloak</name>
+    <summary>Keycloak identity and access management for Nextcloud</summary>
+    <description><![CDATA[Keycloak Identity Management for Nextcloud
+
+Integrate Keycloak identity and access management with your Nextcloud instance.
+
+- Single Sign-On (SSO) via OpenID Connect
+- User federation and identity brokering
+- Fine-grained authorization
+- Admin console for realm and client management
+
+Provides shared OIDC authentication for Common Ground ExApps (OpenZaak, OpenKlant, OpenTalk, Valtimo).
+
+This is an ExApp (External Application) - Nextcloud will automatically manage the Keycloak container.
+    ]]></description>
+    <version>1.0.0</version>
+    <licence>EUPL-1.2</licence>
+    <author mail="info@conduction.nl" homepage="https://www.conduction.nl/">Conduction</author>
+    <category>security</category>
+    <category>integration</category>
+    <website>https://github.com/ConductionNL/keycloak-nextcloud</website>
+    <bugs>https://github.com/ConductionNL/keycloak-nextcloud/issues</bugs>
+    <repository>https://github.com/ConductionNL/keycloak-nextcloud</repository>
+
+    <dependencies>
+        <nextcloud min-version="30" max-version="33"/>
+    </dependencies>
+
+    <external-app>
+        <docker-install>
+            <registry>ghcr.io</registry>
+            <image>conductionnl/keycloak-nextcloud</image>
+            <image-tag>latest</image-tag>
+        </docker-install>
+
+        <routes>
+            <route>
+                <url>.*</url>
+                <verb>GET,POST,PUT,DELETE,PATCH,OPTIONS</verb>
+                <access_level>ADMIN</access_level>
+                <headers_to_exclude>[]</headers_to_exclude>
+            </route>
+        </routes>
+
+        <environment-variables>
+            <variable>
+                <name>KC_DB</name>
+                <display-name>Database Type</display-name>
+                <description>Database vendor: postgres, mysql, mariadb (default: postgres)</description>
+            </variable>
+            <variable>
+                <name>KC_DB_URL</name>
+                <display-name>Database URL</display-name>
+                <description>JDBC database connection string (e.g., jdbc:postgresql://host:5432/keycloak)</description>
+            </variable>
+            <variable>
+                <name>KC_DB_USERNAME</name>
+                <display-name>Database Username</display-name>
+                <description>Database username for Keycloak</description>
+            </variable>
+            <variable>
+                <name>KC_DB_PASSWORD</name>
+                <display-name>Database Password</display-name>
+                <description>Database password for Keycloak</description>
+            </variable>
+        </environment-variables>
+    </external-app>
+</info>

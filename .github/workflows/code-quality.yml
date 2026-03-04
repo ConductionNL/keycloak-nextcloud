@@ -1,0 +1,39 @@
+name: Code Quality
+
+on:
+  pull_request:
+    branches: [main, master, development]
+
+concurrency:
+  group: quality-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python-checks:
+    name: ${{ matrix.check.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        check:
+          - { name: "Ruff Lint", command: "ruff check ex_app/" }
+          - { name: "Ruff Format", command: "ruff format --check ex_app/" }
+          - { name: "Mypy", command: "mypy ex_app/" }
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+          pip install -r requirements.txt
+
+      - name: ${{ matrix.check.name }}
+        run: ${{ matrix.check.command }}
