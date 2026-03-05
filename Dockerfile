@@ -1,23 +1,29 @@
-FROM python:3.11-slim AS python-builder
+# Keycloak ExApp for Nextcloud
+# Wraps Keycloak identity management with AppAPI integration
+#
+# Build: docker build -t ghcr.io/conductionnl/keycloak-nextcloud:latest .
 
-WORKDIR /build
-COPY requirements.txt .
-RUN pip install --no-cache-dir --prefix=/python-packages -r requirements.txt
+# Stage 1: Get Keycloak distribution from official image
+FROM quay.io/keycloak/keycloak:26.5.4 AS keycloak
 
+# Stage 2: Runtime with Python + Java + Keycloak
+FROM registry.access.redhat.com/ubi9/ubi-minimal:latest
 
-FROM quay.io/keycloak/keycloak:26.5.4
+# Install Java (same JDK 21 that Keycloak expects) and Python
+RUN microdnf install -y \
+        java-21-openjdk-headless \
+        python3.11 \
+        python3.11-pip \
+    && microdnf clean all \
+    && ln -sf /usr/bin/python3.11 /usr/bin/python3
 
-USER root
+# Copy Keycloak from the official image
+COPY --from=keycloak /opt/keycloak /opt/keycloak
 
-# Install Python runtime (UBI9-based image)
-RUN microdnf install -y python3.11 python3.11-pip && microdnf clean all
-
-# Copy pre-built Python packages from builder
-COPY --from=python-builder /python-packages/lib/python3.11/site-packages/ /usr/lib/python3.11/site-packages/
-COPY --from=python-builder /python-packages/bin/ /usr/local/bin/
-
-# Create app directory
+# Install Python packages
 WORKDIR /app
+COPY requirements.txt .
+RUN python3 -m pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY ex_app/ ex_app/
@@ -27,5 +33,9 @@ RUN chmod +x entrypoint.sh
 
 # Persistent data directory
 VOLUME /data
+
+# Keycloak environment
+ENV KC_HOME="/opt/keycloak"
+ENV PATH="/opt/keycloak/bin:${PATH}"
 
 ENTRYPOINT ["./entrypoint.sh"]
