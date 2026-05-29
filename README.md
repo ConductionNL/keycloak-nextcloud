@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="img/app.svg" alt="Keycloak logo" width="80" height="80">
+  <img src="img/app-store.svg" alt="Keycloak logo" width="80" height="80">
 </p>
 
 <h1 align="center">Keycloak Nextcloud ExApp</h1>
