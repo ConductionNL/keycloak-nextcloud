@@ -27,7 +27,7 @@ This is an ExApp (External Application) - Nextcloud will automatically manage th
     <repository>https://github.com/ConductionNL/keycloak-nextcloud</repository>
 
     <dependencies>
-        <nextcloud min-version="30" max-version="34"/>
+        <nextcloud min-version="32" max-version="34"/>
     </dependencies>
 
     <external-app>
